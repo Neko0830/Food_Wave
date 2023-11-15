@@ -44,6 +44,9 @@ var_dump($_SESSION);
 
                         if ($restaurant_result->num_rows > 0) {
                             $restaurant = $restaurant_result->fetch_assoc();
+
+                            // Set restaurant_id in session
+                            $_SESSION['restaurant_id'] = $restaurant_id; // Assuming you need this ID for further processing
                         } else {
                             echo "Restaurant not found.";
                             exit();
@@ -58,7 +61,7 @@ var_dump($_SESSION);
                     {
                         $food_items = array();
 
-                        $food_query = "SELECT * FROM FoodItems WHERE restaurant_id = ?";
+                        $food_query = "SELECT * FROM Food_Items WHERE restaurant_id = ?";
                         $food_stmt = $conn->prepare($food_query);
                         $food_stmt->bind_param("i", $restaurant_id);
 
@@ -127,8 +130,8 @@ var_dump($_SESSION);
 
                     // Query the database to retrieve items in the user's cart
                     $cart_query = "SELECT c.food_item_id, f.name, f.price, c.quantity, (f.price * c.quantity) AS total 
-                              FROM cart AS c
-                              JOIN FoodItems AS f ON c.food_item_id = f.food_id
+                              FROM carts AS c
+                              JOIN Food_Items AS f ON c.food_item_id = f.food_id
                               WHERE c.customer_id = ?";
 
                     $cart_stmt = $conn->prepare($cart_query);

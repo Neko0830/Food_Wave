@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $restaurant_id = $_SESSION['restaurant_id'];
 
     // Insert the new dish into the FoodItems table
-    $insert_dish_query = "INSERT INTO FoodItems (restaurant_id, name, description, price, image_url) VALUES (?, ?, ?, ?, ?)";
+    $insert_dish_query = "INSERT INTO Food_items (restaurant_id, name, description, price, image_url) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_dish_query);
 
     if ($stmt) {

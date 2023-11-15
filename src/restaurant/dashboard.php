@@ -3,9 +3,9 @@ session_start();
 @include "../conn.php";
 
 // Check if the user is logged in as a restaurant owner
-if ($_SESSION['role'] !== 'restaurant_owner') {
+if ($_SESSION['role'] !== 'owner') {
     // Redirect to the login page or another appropriate page
-    header('Location: login.php');
+    header('Location: /login.php');
     exit();
 }
 
@@ -37,7 +37,7 @@ function getRestaurantFoodItems($restaurant_id, $conn)
 {
     $food_items = array();
 
-    $food_query = "SELECT * FROM FoodItems WHERE restaurant_id = ?";
+    $food_query = "SELECT * FROM food_items WHERE restaurant_id = ?";
     $food_stmt = $conn->prepare($food_query);
     $food_stmt->bind_param("i", $restaurant_id);
 
@@ -65,7 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $image_url = $_POST['image_url'];
 
     // Insert the new dish into the FoodItems table
-    $insert_dish_query = "INSERT INTO FoodItems (restaurant_id, name, description, price, image_url) VALUES (?, ?, ?, ?, ?)";
+    $insert_dish_query = "INSERT INTO food_items (restaurant_id, name, description, price, image_url) VALUES (?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($insert_dish_query);
 
     if ($stmt) {
@@ -161,7 +161,7 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
     FROM orders AS o
     JOIN users AS u ON o.customer_id = u.user_id
     JOIN order_details AS od ON o.order_id = od.order_id
-    JOIN FoodItems AS f ON od.food_item_id = f.food_id
+    JOIN Food_items AS f ON od.food_item_id = f.food_id
     WHERE o.restaurant_id = ?
     GROUP BY o.order_id;
 ";

@@ -1,26 +1,12 @@
 <?php
-@include "conn.php";
 session_start();
+include "conn.php";
 
-if (isset($_SESSION['user_id'])) {
-  // If the user is already logged in, redirect to the dashboard based on their role
-  if ($_SESSION['role'] === 'restaurant_owner') {
-    header("Location: restaurant/dashboard.php");
-  } elseif ($_SESSION['role'] === 'customer') {
-    header("Location: customer/dash.php");
-  }
-  exit();
-}
-
-$errorMessage = ""; // Initialize an empty error message
+$errorMessage = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $username = $_POST["username"];
   $password = $_POST["password"];
-
-  if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-  }
 
   $stmt = $conn->prepare("SELECT * FROM users WHERE username=?");
   $stmt->bind_param("s", $username);
@@ -34,39 +20,30 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       if (password_verify($password, $row["password"])) {
         $_SESSION["user_id"] = $row["user_id"];
         $_SESSION["username"] = $row["username"];
-        $_SESSION["role"] = $row["role"]; // Store the user's role in the session
+        $_SESSION["role"] = $row["role"];
 
-        if ($_SESSION["role"] === 'restaurant_owner') {
-          // Retrieve the restaurant_id associated with this owner
-          $owner_id = $row["user_id"];
-          $restaurant_id_query = "SELECT restaurant_id FROM Restaurants WHERE owner_id = ?";
-          $stmt2 = $conn->prepare($restaurant_id_query);
-          $stmt2->bind_param("i", $owner_id);
-
-          if ($stmt2->execute()) {
-            $restaurant_id_result = $stmt2->get_result();
-            if ($restaurant_id_result->num_rows > 0) {
-              $restaurant_id_row = $restaurant_id_result->fetch_assoc();
-              $_SESSION["restaurant_id"] = $restaurant_id_row["restaurant_id"];
-              header("Location: restaurant/dashboard.php"); // Redirect to restaurant owner dashboard
-            } else {
-              $errorMessage = "Restaurant not found.";
-            }
-            $stmt2->close();
+        if ($row['role'] === 'owner') {
+          if ($row['approved'] == 1) {
+            header("Location: restaurant/dashboard.php");
+            exit();
           } else {
-            $errorMessage = "Error fetching restaurant data.";
+            $errorMessage = "Account is not yet approved";
           }
-        } elseif ($_SESSION["role"] === 'customer') {
-          header("Location: customer/dash.php"); // Redirect to customer dashboard
+        } elseif ($row['role'] === 'admin') {
+          header("Location: admin/dashboard.php");
+          exit();
+        } elseif ($row['role'] === 'customer') {
+          header("Location: customer/dash.php");
+          exit();
         }
       } else {
         $errorMessage = "Invalid password";
       }
     } else {
-      $errorMessage = "User not found";
+      $errorMessage = "User not found or not authorized";
     }
   } else {
-    echo "Error: " . $stmt->error;
+    $errorMessage = "Error executing SQL statement";
   }
 
   $stmt->close();

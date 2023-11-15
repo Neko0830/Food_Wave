@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Insert the cart item into the cart table
 
-        $insert_cart_item_query = "INSERT INTO cart (customer_id, restaurant_id, food_item_id, quantity) VALUES (?, ?, ?, ?)";
+        $insert_cart_item_query = "INSERT INTO carts (customer_id, restaurant_id, food_item_id, quantity) VALUES (?, ?, ?, ?)";
         $stmt = $conn->prepare($insert_cart_item_query);
 
         if ($stmt) {

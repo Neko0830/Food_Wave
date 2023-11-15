@@ -3,6 +3,11 @@
 session_start();
 @include '../conn.php';
 
+if ($_SESSION['role'] !== 'customer') {
+  // Redirect to the login page or another appropriate page
+  header('Location: ../login.php');
+  exit();
+}
 // Fetch data from the database
 $sql = "SELECT restaurant_id, name, profile_image_url FROM restaurants";
 $result = mysqli_query($conn, $sql);
