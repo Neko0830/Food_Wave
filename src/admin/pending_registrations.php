@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html data-theme="mytheme">
 
 <head>
     <title>Pending Registrations</title>
+    <link rel="stylesheet" href="../../dist/output.css">
 </head>
 
 <body>
-    <h1>Pending Registrations</h1>
-    <table border="1">
+    <h1 class="font-bold text-lg">Pending Registrations</h1>
+    <table class="table">
         <thead>
             <tr>
                 <th>User ID</th>
@@ -73,6 +74,7 @@
             ?>
         </tbody>
     </table>
+    <a href="dashboard.php" class="btn btn-secondary btn-outline px-4 btn-sm">Back</a>
 </body>
 
 </html>

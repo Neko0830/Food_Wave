@@ -58,30 +58,7 @@ function getRestaurantFoodItems($restaurant_id, $conn)
 }
 
 // Check if the form for adding a new dish is submitted
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $dish_name = $_POST['dish_name'];
-    $description = $_POST['description'];
-    $price = $_POST['price'];
-    $image_url = $_POST['image_url'];
 
-    // Insert the new dish into the FoodItems table
-    $insert_dish_query = "INSERT INTO food_items (restaurant_id, name, description, price, image_url) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($insert_dish_query);
-
-    if ($stmt) {
-        $stmt->bind_param("isssd", $restaurant_id, $dish_name, $description, $price, $image_url);
-
-        if ($stmt->execute()) {
-            echo "Dish added successfully!";
-        } else {
-            echo "Error: " . $stmt->error;
-        }
-
-        $stmt->close();
-    } else {
-        echo "Error: " . $conn->error;
-    }
-}
 
 // Get the list of food items for this restaurant
 $food_items = getRestaurantFoodItems($restaurant_id, $conn);
@@ -96,43 +73,37 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
     <title>Restaurant Dashboard</title>
     <link rel="stylesheet" href="../../dist/output.css">
 </head>
-<nav class="container flex space-x-4 p-4 w-full justify-end">
-    <a class="btn btn-disabled btn-sm" <a href="edit_profile.php">Edit Profile</a>
-    <a class="btn btn-primary btn-sm" href="../logout.php">Logout</a>
-</nav>
-<div class="divider -mt-2"></div>
+<header>
+    <div class="navbar bg-base-100 mt-2" style="justify-content: space-between;">
+        <div class="basis-1/4">
+            <a class="btn btn-ghost normal-case text-xl">FoodWave</a>
+        </div>
+        <div class="space-x-6">
+            <a href="dashboard.php">Dashboard</a>
+            <a href="dishes.php">Dishes</a>
+            <a href="#"></a>
+        </div>
+        <div>
+            <button class="btn btn-secondary btn-sm btn-outline px-3"><a href="../logout.php">Logout</a></button>
+        </div>
+    </div>
+</header>
+<div class="divider -mt-1"></div>
 
 
 <body>
-    <h1>Welcome to Your Restaurant Dashboard, <?php echo $restaurant['name']; ?></h1>
-    <h2>Add New Dish</h2>
-
-    <form method="post" action="dashboard.php">
-        <label for="dish_name">Dish Name:</label>
-        <input type="text" id="dish_name" name="dish_name" required><br><br>
-
-        <label for="description">Description:</label>
-        <textarea id="description" name="description" rows="4" cols="50"></textarea><br><br>
-
-        <label for="price">Price:</label>
-        <input type="number" id="price" name="price" step="0.01" required><br><br>
-
-        <label for="image_url">Image URL:</label>
-        <input type="text" id="image_url" name="image_url"><br><br>
-
-        <input type="submit" value="Add Dish">
-    </form>
-
-    <h2>Your Food Items</h2>
-    <table class="table">
+    <h1 class="font-semibold">Welcome to Your Restaurant Dashboard, <?php echo $restaurant['name']; ?></h1>
+    <table class="table mt-6">
         <tr>
-            <th>Food Item</th>
+            <th></th>
+            <th>Food Items</th>
             <th>Description</th>
             <th>Price</th>
         </tr>
         <?php
         foreach ($food_items as $food_item) {
             echo '<tr>';
+            echo "<td>{$food_item['image_url']}</td>";
             echo "<td>{$food_item['name']}</td>";
             echo "<td>{$food_item['description']}</td>";
             echo "<td>₱{$food_item['price']}</td>";
@@ -140,8 +111,8 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
         ?>
     </table>
 
-    <h2>Orders</h2>
-    <div class="overflow-x-auto">
+
+    <div class="overflow-x-auto mt-6">
         <table class="table">
             <thead>
                 <tr>
