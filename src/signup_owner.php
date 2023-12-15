@@ -40,9 +40,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $defaultApprovalStatus = 'pending'; // Default status for admin approval
 
         // Insert data into Users table
-        $insertUserQuery = "INSERT INTO Users (full_name, username, password, email, phone_number, address, role, approved) VALUES (?, ?, ?, ?, ?, ?, 'owner', ?)";
+        $insertUserQuery = "INSERT INTO Users (full_name, username, password, email, phone_number, address, role, approved_status) VALUES (?, ?, ?, ?, ?, ?, 'owner', 0)";
         $insertUserStmt = $conn->prepare($insertUserQuery);
-        $insertUserStmt->bind_param("sssssss", $name, $username, $hashedPassword, $email, $phone_number, $address, $defaultApprovalStatus);
+        $insertUserStmt->bind_param("ssssss", $name, $username, $hashedPassword, $email, $phone_number, $address);
 
         if ($insertUserStmt->execute()) {
             // Retrieve the user_id of the newly inserted user

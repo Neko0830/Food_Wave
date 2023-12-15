@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
         // Use a prepared statement to insert user data into the Users table
-        $stmt = $conn->prepare("INSERT INTO users (full_name, username, password, email, phone_number, address, role) VALUES (?, ?, ?, ?, ?, ?, 'customer')");
+        $stmt = $conn->prepare("INSERT INTO users (full_name, username, password, email, phone_number, address, role) VALUES (?, ?, ?, ?, ?, ?, 'admin')");
         $stmt->bind_param("ssssss", $name, $username, $hashedPassword, $email, $phone_number, $address);
 
         if ($stmt->execute()) {
@@ -62,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <?php foreach ($errors as $error) { ?>
                     <p class="error text-xs text-red-600"><?php echo "*" . $error; ?></p>
                 <?php } ?>
-                <form action="signup_customer.php" method="post">
+                <form action="hashadmin.php" method="post">
                     <div class="mt-5">
                         <input type="text" placeholder="Full Name" name="full_name" class="border border-gray-400 py-1 px-2 w-full">
                     </div>

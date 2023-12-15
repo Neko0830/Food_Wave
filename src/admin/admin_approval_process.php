@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($updatePendingStmt->execute()) {
         if ($approvalStatus === 'approved') {
             // Update 'approved' status in the users table to 1
-            $updateUserQuery = "UPDATE users SET approved = 1 WHERE user_id = ?";
+            $updateUserQuery = "UPDATE users SET approved_status = 1 WHERE user_id = ?";
             $updateUserStmt = $conn->prepare($updateUserQuery);
             $updateUserStmt->bind_param("i", $userId);
 

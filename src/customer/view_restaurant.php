@@ -1,6 +1,5 @@
 <?php
 session_start();
-var_dump($_SESSION);
 @include "../conn.php";
 ?>
 
@@ -145,9 +144,9 @@ var_dump($_SESSION);
                         while ($cart_row = $cart_result->fetch_assoc()) {
                             echo '<tr>';
                             echo '<td>' . $cart_row['name'] . '</td>';
-                            echo '<td>$' . $cart_row['price'] . '</td>';
+                            echo '<td>' . $cart_row['price'] . '</td>';
                             echo '<td>' . $cart_row['quantity'] . '</td>';
-                            echo '<td>$' . $cart_row['total'] . '</td>';
+                            echo '<td>' . $cart_row['total'] . '</td>';
                             echo '</tr>';
 
                             // Add the item total to the cart total

@@ -23,7 +23,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION["role"] = $row["role"];
 
         if ($row['role'] === 'owner') {
-          if ($row['approved'] == 1) {
+          if ($row['approved_status'] == 1) {
             header("Location: restaurant/dashboard.php");
             exit();
           } else {
