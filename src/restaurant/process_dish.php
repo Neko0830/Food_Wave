@@ -38,6 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <head>
     <title>Add New Dish</title>
+    <link rel="stylesheet" href="../../dist/output.css">
 </head>
 
 <body>

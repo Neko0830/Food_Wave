@@ -5,18 +5,20 @@ $errors = array();
 
 // Fetch the restaurant's existing information
 $restaurant = array(
-    'name' => '', // Initialize with default values
+    'name' => '',
     'location' => '',
     'contact_email' => '',
     'contact_phone' => '',
     'opening_hours' => '',
     'delivery_radius' => ''
 );
+
 if (isset($_SESSION['restaurant_id'])) {
     $restaurant_id = $_SESSION['restaurant_id'];
     $fetch_query = "SELECT * FROM Restaurants WHERE restaurant_id = ?";
     $stmt = $conn->prepare($fetch_query);
     $stmt->bind_param("i", $restaurant_id);
+
     if ($stmt->execute()) {
         $restaurant_result = $stmt->get_result();
         if ($restaurant_result->num_rows > 0) {
@@ -48,8 +50,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($stmt->execute()) {
         // Data updated successfully
-        // You can also handle the image upload here if needed
-        header("Location: dashboard.php"); // Redirect back to the edit profile page or another page
+
+        // Handle new profile image upload
+        if (isset($_FILES['new_image']) && $_FILES['new_image']['error'] === UPLOAD_ERR_OK) {
+            $new_image_tmp_name = $_FILES['new_image']['tmp_name'];
+            $new_image_name = $_FILES['new_image']['name'];
+
+            // Specify the directory to save the uploaded new image
+            $new_image_upload_path = "xampp/htdocs/food_wave/food_wave/uploads/" . $new_image_name;
+
+            if (move_uploaded_file($new_image_tmp_name, $new_image_upload_path)) {
+                // Update the restaurant's new image path in the database
+                $update_new_image_query = "UPDATE Restaurants SET new_image = ? WHERE restaurant_id = ?";
+                $stmt_new_image = $conn->prepare($update_new_image_query);
+                $stmt_new_image->bind_param("si", $new_image_upload_path, $restaurant_id);
+
+                if ($stmt_new_image->execute()) {
+                    // New image path updated successfully
+                } else {
+                    $errors[] = "Error updating new image path.";
+                }
+                $stmt_new_image->close();
+            } else {
+                $errors[] = "Failed to move uploaded new image.";
+            }
+        }
+
+        header("Location: dashboard.php");
+        exit();
     } else {
         $errors[] = "Error updating restaurant data.";
     }
@@ -103,13 +131,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="file" id="new_image" name="new_image">
                     </div>
                     <div class="mt-5">
+                        <label for="banner_image">Banner Image</label>
+                        <input type="file" id="banner_image" name="banner_image">
+                    </div>
+                    <div class="mt-5">
                         <input type="submit" value="Save Changes">
                     </div>
                 </form>
-
             </div>
         </div>
     </div>
 </body>
+
 
 </html>

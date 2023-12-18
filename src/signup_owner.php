@@ -87,11 +87,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html data-theme='dark'>
 
 <head>
     <title>Restaurant Owner Sign Up</title>
-    <!-- Include necessary CSS files -->
+    <link rel="stylesheet" href="../dist/output.css">
 </head>
 <?php if (!empty($errors)) : ?>
     <ul>
@@ -102,21 +102,46 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <?php endif; ?>
 
 <body>
-    <h1>Restaurant Owner Sign Up</h1>
-
-    <!-- Owner registration form -->
-    <form action="signup_owner.php" method="post">
-        <input type="text" name="full_name" placeholder="Full Name"><br><br>
-        <input type="text" name="username" placeholder="Username"><br><br>
-        <input type="password" name="password" placeholder="Password"><br><br>
-        <input type="email" name="email" placeholder="Email"><br><br>
-        <input type="text" name="company_name" placeholder="Company Name"><br><br>
-        <input type="text" name="phone_number" placeholder="Phone Number"><br><br>
-        <input type="time" name="opening_hours" placeholder="Opening Hours"><br><br>
-        <input type="text" name="delivery_radius" placeholder="Delivery Radius"><br><br>
-        <input type="text" name="address" placeholder="Address"><br><br>
-        <input type="submit" value="Sign Up">
-    </form>
+<div class="bg-base-100 h-screen flex justify-center items-center shadow-lg">
+        <div class="w-1/2 card bg-neutral text-neutral-content p-12">
+        <h2 class="text-3xl mb-4">Restaurant Owner Sign Up</h2>
+            <div class="error-messages">
+                <?php foreach ($errors as $error) { ?>
+                    <p class="error text-xs text-red-600"><?php echo "*" . $error; ?></p>
+                <?php } ?>
+                <form action="signup_owner.php" method="post">
+                    <div class="mt-5">
+                        <input type="text" name="full_name" placeholder="Full Name" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="grid grid-cols-2 gap-5 mt-5">
+                        <input type="text" placeholder="Username" name="username" class="border border-gray-400 py-1 px-2">
+                        <input type="password" placeholder="Password" name="password" class="border border-gray-400 py-1 px-2">
+                    </div>
+                    <div class="mt-5">
+                        <input type="text" name="company_name" placeholder="Company Name" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="mt-5">
+                        <input type="email" placeholder="Email" name="email" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="mt-5">
+                        <input type="text" placeholder="Phone Number" name="phone_number" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="mt-5">
+                        <input type="time" name="opening_hours" placeholder="Opening Hours" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="mt-5">
+                        <input type="text" name="delivery_radius" placeholder="Delivery Radius" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="mt-5">
+                        <input type="text" placeholder="Address" name="address" class="border border-gray-400 py-1 px-2 w-full">
+                    </div>
+                    <div class="mt-5">
+                        <button class="w-full bg-purple-500 py-3 text-center text-white">Sign Up</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    
 </body>
 
 </html>

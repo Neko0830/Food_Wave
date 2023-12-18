@@ -27,7 +27,6 @@
         </div>
     </div>
 </header>
-<!-- Navbar end -->
 
 <body>
     <!-- hero container start -->
@@ -37,7 +36,7 @@
                 <div class="text-left text-white">
                     <h1 class="text-5xl font-bold">Place An Order Now!</h1>
                     <!-- <p class="py-6">Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda excepturi exercitationem quasi. In deleniti eaque aut repudiandae et a id nisi.</p> -->
-                    <button class="btn btn-primary mt-12">Get Started</button>
+                    <a href="signup_customer.php" class="btn btn-primary mt-12">Get Started</a>
                 </div>
             </div>
         </div>

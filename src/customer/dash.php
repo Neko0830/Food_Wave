@@ -4,7 +4,6 @@ session_start();
 @include '../conn.php';
 
 if ($_SESSION['role'] !== 'customer') {
-  // Redirect to the login page or another appropriate page
   header('Location: ../login.php');
   exit();
 }
@@ -31,18 +30,13 @@ mysqli_close($conn);
 ?>
 
 <!DOCTYPE html>
-<html data-theme="mytheme">
+<html data-theme="dark">
 
 <head>
   <title>Customer Homepage</title>
   <link rel="stylesheet" type="text/css" href="../../dist/output.css">
 </head>
-<nav class="container flex space-x-4 p-4 w-full justify-end">
-  <a class="btn btn-disabled btn-sm" href=" view_orders.php">Orders</a>
-  <a class="btn btn-primary btn-sm" href=" ../logout.php">Logout</a>
-</nav>
-<div class="divider -mt-2"></div>
-
+<?php include 'header.html';?>
 <body>
   <h1>Restaurants</h1>
   <div>
@@ -54,7 +48,7 @@ mysqli_close($conn);
         echo "<figure><img src='" . $restaurant['image'] . "' alt='" . $restaurant['name'] . "'></figure>";
 
         echo "<h2 class='card-title'>" . $restaurant['name'] . "</h2>";
-        echo "<a class='btn btn-primary btn-outline btn-md' href='view_restaurant.php?id=" . $restaurant['id'] . "'>View Menu</a>";
+        echo "<a class='btn btn-primary btn-outline btn-md' href='view_restaurant.php?id=" . $restaurant['id'] . "&user_id=" . $_SESSION['user_id'] . "'>View Menu</a>";
         echo "</div>";
       }
       ?>

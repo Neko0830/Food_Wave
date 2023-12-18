@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <input type="text" placeholder="Address" name="address" class="border border-gray-400 py-1 px-2 w-full">
                     </div>
                     <div class="mt-5">
-                        <button class="w-full bg-purple-500 py-3 text-center text-white">Sign Up as Customer</button>
+                        <button class="w-full bg-purple-500 py-3 text-center text-white">Sign Up</button>
                     </div>
                 </form>
             </div>

@@ -1,72 +1,56 @@
 <?php
 session_start();
-@include "../conn.php"; // Include database connection
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'])) {
+@include "../conn.php";
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_SESSION['user_id'], $_SESSION['restaurant_id'])) {
     $user_id = $_SESSION['user_id'];
+    $restaurant_id = $_SESSION['restaurant_id'];
 
-    // Retrieve the user's cart items
-    $cart_query = "SELECT * FROM carts WHERE customer_id = ?";
-    $cart_stmt = $conn->prepare($cart_query);
-    $cart_stmt->bind_param("i", $user_id);
+    // Create an order record in the Orders table
+    $create_order_query = "INSERT INTO Orders (customer_id, restaurant_id) VALUES (?, ?)";
+    $create_order_stmt = $conn->prepare($create_order_query);
 
-    if ($cart_stmt->execute()) {
-        $cart_result = $cart_stmt->get_result();
+    if ($create_order_stmt) {
+        $create_order_stmt->bind_param("ii", $user_id, $restaurant_id);
+        $create_order_stmt->execute();
 
-        if ($cart_result->num_rows === 0) {
-            echo "Your cart is empty.";
-            exit();
-        }
+        // Get the last inserted order ID
+        $order_id = $create_order_stmt->insert_id;
 
-        // Start the transaction
-        $conn->begin_transaction();
+        // Move items from cart to order details
+        $move_cart_items_query = "INSERT INTO Order_Details (order_id, food_item_id, quantity) 
+                                  SELECT ?, food_item_id, quantity FROM carts WHERE customer_id = ?";
+        $move_cart_items_stmt = $conn->prepare($move_cart_items_query);
 
-        // Insert an order record into the orders table
-        $insert_order_query = "INSERT INTO orders (customer_id, restaurant_id, total_price, order_date, status) VALUES (?, ?, ?, ?, ?)";
-        $order_stmt = $conn->prepare($insert_order_query);
-        $order_stmt->bind_param("i", $user_id);
+        if ($move_cart_items_stmt) {
+            $move_cart_items_stmt->bind_param("ii", $order_id, $user_id);
+            $move_cart_items_stmt->execute();
 
-        if ($order_stmt->execute()) {
-            $order_id = $conn->insert_id;
+            // Clear the user's cart after placing the order
+            $clear_cart_query = "DELETE FROM carts WHERE customer_id = ?";
+            $clear_cart_stmt = $conn->prepare($clear_cart_query);
 
-            // Move items from the cart to the order_details table
-            $move_items_query = "INSERT INTO order_details (order_id, food_item_id, quantity) SELECT ?, food_item_id, quantity, FROM carts WHERE customer_id = ?";
-            $move_items_stmt = $conn->prepare($move_items_query);
-            $move_items_stmt->bind_param("ii", $order_id, $user_id);
-
-            if ($move_items_stmt->execute()) {
-                // Clear the user's cart
-                $clear_cart_query = "DELETE FROM carts WHERE customer_id = ?";
-                $clear_cart_stmt = $conn->prepare($clear_cart_query);
+            if ($clear_cart_stmt) {
                 $clear_cart_stmt->bind_param("i", $user_id);
+                $clear_cart_stmt->execute();
 
-                if ($clear_cart_stmt->execute()) {
-                    // Commit the transaction
-                    $conn->commit();
-                    echo "Order completed successfully. Order ID: " . $order_id;
-                } else {
-                    // Rollback the transaction if clearing cart fails
-                    $conn->rollback();
-                    echo "Error clearing cart: " . $clear_cart_stmt->error;
-                }
+                // Redirect to a success page or any other desired page
+                header("Location: order_success.php");
+                exit();
             } else {
-                // Rollback the transaction if moving items fails
-                $conn->rollback();
-                echo "Error moving items to order: " . $move_items_stmt->error;
+                echo "Error clearing cart: " . $conn->error;
+                exit();
             }
         } else {
-            // Rollback the transaction if order creation fails
-            $conn->rollback();
-            echo "Error creating order: " . $order_stmt->error;
+            echo "Error moving items from cart: " . $conn->error;
+            exit();
         }
     } else {
-        echo "Error retrieving cart items: " . $cart_stmt->error;
+        echo "Error creating order: " . $conn->error;
         exit();
     }
-
-    // Close prepared statements
-    $cart_stmt->close();
-    $order_stmt->close();
-    $move_items_stmt->close();
-    $clear_cart_stmt->close();
+} else {
+    // Handle the case where the expected session data is missing
+    echo "Session data missing or invalid request.";
+    exit();
 }
+?>

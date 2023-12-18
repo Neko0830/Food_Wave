@@ -64,21 +64,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <title>Restaurant Dashboard</title>
     <link rel="stylesheet" href="../../dist/output.css">
 </head>
-<header>
-    <div class="navbar bg-base-100 mt-2" style="justify-content: space-between;">
-        <div class="basis-1/4">
-            <a class="btn btn-ghost normal-case text-xl">FoodWave</a>
-        </div>
-        <div class="space-x-6">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="#">Dishes</a>
-            <a href="#"></a>
-        </div>
-        <div>
-            <button class="btn btn-secondary btn-sm btn-outline px-3"><a href="../logout.php">Logout</a></button>
-        </div>
-    </div>
-</header>
+<?php
+include 'header.html';
+?>
 <div class="divider -mt-1"></div>
 
 

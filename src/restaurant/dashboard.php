@@ -68,26 +68,14 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
 <html lang="en" data-theme="mytheme">
 
 <head>
-    <meta charset=" UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Dashboard</title>
     <link rel="stylesheet" href="../../dist/output.css">
 </head>
-<header>
-    <div class="navbar bg-base-100 mt-2" style="justify-content: space-between;">
-        <div class="basis-1/4">
-            <a class="btn btn-ghost normal-case text-xl">FoodWave</a>
-        </div>
-        <div class="space-x-6">
-            <a href="dashboard.php">Dashboard</a>
-            <a href="dishes.php">Dishes</a>
-            <a href="#"></a>
-        </div>
-        <div>
-            <button class="btn btn-secondary btn-sm btn-outline px-3"><a href="../logout.php">Logout</a></button>
-        </div>
-    </div>
-</header>
+<?php 
+include 'header.html';
+?>
 <div class="divider -mt-1"></div>
 
 
@@ -111,16 +99,17 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
         ?>
     </table>
 
-
     <div class="overflow-x-auto mt-6">
         <table class="table">
             <thead>
                 <tr>
+                    <th>User Name</th>
                     <th>Order ID</th>
-                    <th>Customer Name</th>
                     <th>Order Status</th>
                     <th>Order Time</th>
                     <th>Food Items</th>
+                    <th>Quantity</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
@@ -128,14 +117,17 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
 
                 // Query the orders associated with the restaurant along with food items
                 $orders_query = "
-    SELECT o.order_id, o.total_price, o.status AS order_status, o.order_date, u.username, GROUP_CONCAT(f.name SEPARATOR ', ') AS food_items
-    FROM orders AS o
-    JOIN users AS u ON o.customer_id = u.user_id
-    JOIN order_details AS od ON o.order_id = od.order_id
-    JOIN Food_items AS f ON od.food_item_id = f.food_id
-    WHERE o.restaurant_id = ?
-    GROUP BY o.order_id;
-";
+                SELECT o.order_id, o.status AS order_status, o.order_date, u.username, 
+                GROUP_CONCAT(f.name SEPARATOR ', ') AS food_items,
+                SUM(f.price * od.quantity) AS total_price
+                FROM orders AS o
+                JOIN users AS u ON o.customer_id = u.user_id
+                JOIN order_details AS od ON o.order_id = od.order_id
+                JOIN Food_items AS f ON od.food_item_id = f.food_id
+                WHERE o.restaurant_id = ? AND o.status != 'Completed'
+                GROUP BY o.order_id;
+                ";
+                
 
                 $orders_stmt = $conn->prepare($orders_query);
                 if (!$orders_stmt) {
@@ -159,13 +151,69 @@ $food_items = getRestaurantFoodItems($restaurant_id, $conn);
                 } else {
                     // Fetch and display orders
                     while ($order_row = $orders_result->fetch_assoc()) {
-                        // Display order details
-                        // ...
+                        echo "<tr>";
+                        echo "<td>{$order_row['username']}</td>";
+                        echo "<td>{$order_row['order_id']}</td>";
+                        echo "<td>{$order_row['order_status']}</td>";
+                        echo "<td>{$order_row['order_date']}</td>";
+                
+                        // Query to fetch quantities for each order
+                        $quantity_query = "SELECT od.quantity FROM order_details AS od WHERE od.order_id = ?";
+                        $quantity_stmt = $conn->prepare($quantity_query);
+                        $quantity_stmt->bind_param("i", $order_row['order_id']);
+                        $quantity_stmt->execute();
+                        $quantity_result = $quantity_stmt->get_result();
+                
+                        if ($quantity_result) {
+                            $quantities = array();
+                            while ($quantity_row = $quantity_result->fetch_assoc()) {
+                                $quantities[] = $quantity_row['quantity'];
+                            }
+                        } else {
+                            // Handle the case where quantity retrieval failed
+                            $quantities = array(); // Set a default value or handle appropriately
+                        }
+                
+                        // Separate food items and quantities
+                        $foodItems = explode(", ", $order_row['food_items']);
+                
+                        echo "<td>";
+                        foreach ($foodItems as $key => $foodItem) {
+                            echo $foodItem . " (Qty: " . $quantities[$key] . ")<br/>";
+                        }
+                        echo "</td>";
+                
+                        // Display quantities
+                        echo "<td>";
+                        foreach ($quantities as $quantity) {
+                            echo $quantity . "<br/>";
+                        }
+                        echo "</td>";
+                
+                        // Buttons for changing order status
+                        echo "<td>";
+                        echo "<form action='change_status.php' method='POST'>";
+                        echo "<input type='hidden' name='order_id' value='{$order_row['order_id']}'>";
+                
+                        if ($order_row['order_status'] === 'Pending') {
+                            echo "<input type='hidden' name='change_to' value='Processing'>";
+                            echo "<input class='btn btn-primary btn-sm' type='submit' name='process_order' value='Process'>";
+                        }
+                
+                        if ($order_row['order_status'] === 'Processing') {
+                            echo "<input type='hidden' name='change_to' value='Completed'>";
+                            echo "<input class='btn btn-primary btn-sm 'type='submit' name='complete_order' value='Complete'>";
+                        }
+                        echo "</form>";
+                        echo "</td>";
+                
+                        echo "</tr>";
                     }
                 }
-
                 ?>
-                </ul>
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>

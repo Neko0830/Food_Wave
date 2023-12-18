@@ -10,15 +10,11 @@ session_start();
     <title>View Restaurant Menu</title>
     <link rel="stylesheet" href="../../dist/output.css">
 </head>
-<nav class="container flex space-x-4 p-4 w-full justify-end">
-    <a class="btn btn-disabled btn-sm" href=" view_orders.php">Orders</a>
-    <a class="btn btn-primary btn-sm" href=" ../logout.php">Logout</a>
-</nav>
-<div class="divider -mt-2"></div>
+<?php include 'header.html';?>
 
 <body>
     <div class="overflow-x-auto">
-        <h1>Restaurant Menu</h1>
+        <h1 class='text-lg font-semibold'>Restaurant Menu</h1>
         <table class=" table">
             <thead>
                 <tr>
@@ -111,7 +107,7 @@ session_start();
     </div>
     <!-- User's Cart Section -->
     <div id="cart-section" class="overflow-x-auto">
-        <h2>Your Cart</h2>
+        <div class="divider"><h2>Your Cart</h2></div>
         <table class="table">
             <thead>
                 <tr>
@@ -147,6 +143,12 @@ session_start();
                             echo '<td>' . $cart_row['price'] . '</td>';
                             echo '<td>' . $cart_row['quantity'] . '</td>';
                             echo '<td>' . $cart_row['total'] . '</td>';
+                            echo '<td><form method="post" action="remove_from_cart.php">';
+                            echo '<input type="hidden" name="food_item_id" value="' . $cart_row['food_item_id'] . '">';
+                            echo '<input type="hidden" name="return_page" value="' .  $_SERVER['HTTP_REFERER'] . '">';
+
+                            echo '<button type="submit" class="remove-from-cart-button btn btn-error btn-outline btn-sm">Remove</button>';
+                            echo '</form></td>';
                             echo '</tr>';
 
                             // Add the item total to the cart total
@@ -169,9 +171,10 @@ session_start();
         </table>
     </div>
     <!-- Complete Order Button -->
-    <form method=" post" action="complete_order.php">
-        <button type="submit" class="btn btn-primary">Complete Order</button>
-    </form>
+    <form method="post" action="complete_order.php">
+    <input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id']; ?>">
+    <button type="submit" class="btn btn-primary">Complete Order</button>
+</form>
 </body>
 
 </html>

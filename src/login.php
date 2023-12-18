@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <body>
   <div class="bg-base-100 h-screen flex justify-center items-center shadow-lg">
-    <div class="glass w-96 card bg-neutral text-neutral-content p-12">
+    <div class=" w-96 card bg-neutral text-neutral-content p-12">
       <h2 class="text-3xl mb-4">Login</h2>
 
       <?php if (!empty($errorMessage)) : ?>
